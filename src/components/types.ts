@@ -1,4 +1,4 @@
-import type { PageViewport } from 'pdfjs-dist'
+import type { PageViewport } from 'pdfjs-dist/types/src/display/display_utils'
 import type { OnProgressParameters } from 'pdfjs-dist/types/src/display/api'
 import type { Metadata } from 'pdfjs-dist/types/src/display/metadata'
 

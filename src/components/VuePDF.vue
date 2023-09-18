@@ -5,8 +5,9 @@ import { onMounted, ref, toRaw, watch } from 'vue'
 
 import 'pdfjs-dist/web/pdf_viewer.css'
 
-import type { PDFDocumentLoadingTask, PDFDocumentProxy, PDFPageProxy, PageViewport, RenderTask } from 'pdfjs-dist'
-import type { GetViewportParameters, RenderParameters } from 'pdfjs-dist/types/src/display/api'
+import type { GetViewportParameters, PDFDocumentLoadingTask, PDFDocumentProxy, PDFPageProxy, RenderParameters, RenderTask } from 'pdfjs-dist/types/src/display/api'
+import type { PageViewport } from 'pdfjs-dist/types/src/display/display_utils'
+
 import type { AnnotationEventPayload, LoadedEventPayload } from './types'
 
 import AnnotationLayer from './layers/AnnotationLayer.vue'
