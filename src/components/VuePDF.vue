@@ -5,12 +5,14 @@ import { onMounted, ref, toRaw, watch } from 'vue'
 
 import 'pdfjs-dist/web/pdf_viewer.css'
 
-import type { PDFDocumentLoadingTask, PDFDocumentProxy, PDFPageProxy, PageViewport, RenderTask } from 'pdfjs-dist'
-import type { GetViewportParameters, RenderParameters } from 'pdfjs-dist/types/src/display/api'
+import type { GetViewportParameters, PDFDocumentLoadingTask, PDFDocumentProxy, PDFPageProxy, RenderParameters, RenderTask } from 'pdfjs-dist/types/src/display/api'
+import type { PageViewport } from 'pdfjs-dist/types/src/display/display_utils'
+
 import type { AnnotationEventPayload, LoadedEventPayload } from './types'
 
 import AnnotationLayer from './layers/AnnotationLayer.vue'
 import TextLayer from './layers/TextLayer.vue'
+import XFALayer from './layers/XFALayer.vue'
 
 const props = withDefaults(defineProps<{
   pdf?: PDFDocumentLoadingTask
@@ -42,9 +44,9 @@ const loading = ref(false)
 let renderTask: RenderTask
 
 // PDF Refs
-const DocumentProxy = ref<PDFDocumentProxy | null>(null)
-const PageProxy = ref<PDFPageProxy | null>(null)
-const InternalViewport = ref<PageViewport | null>(null)
+const DocumentProxy = ref<PDFDocumentProxy>()
+const PageProxy = ref<PDFPageProxy>()
+const InternalViewport = ref<PageViewport>()
 
 function emitLoaded(data: LoadedEventPayload) {
   emit('loaded', data)
@@ -120,17 +122,21 @@ function setupCanvas(viewport: PageViewport): HTMLCanvasElement {
     canvas.style.display = 'block'
     canvas.setAttribute('dir', 'ltr')
   }
-  canvas.width = viewport.width
-  canvas.height = viewport.height
 
-  canvas.style.width = `${viewport.width}px`
-  canvas.style.height = `${viewport.height}px`
+  const outputScale = window.devicePixelRatio || 1
+  canvas.width = Math.floor(viewport.width * outputScale)
+  canvas.height = Math.floor(viewport.height * outputScale)
+
+  canvas.style.width = `${Math.floor(viewport.width)}px`
+  canvas.style.height = `${Math.floor(viewport.height)}px`
 
   // --scale-factor property
   container.value?.style.setProperty('--scale-factor', `${viewport.scale}`)
   // Also setting dimension properties for load layer
-  loadingLayer.value!.style.width = `${viewport.width}px`
-  loadingLayer.value!.style.height = `${viewport.height}px`
+  loadingLayer.value!.style.width = `${Math.floor(viewport.width)}px`
+  loadingLayer.value!.style.height = `${Math.floor(viewport.height)}px`
+  loadingLayer.value!.style.top = '0'
+  loadingLayer.value!.style.left = '0'
   loading.value = true
   return canvas
 }
@@ -154,11 +160,15 @@ function renderPage(pageNum: number) {
     const oldCanvas = getCurrentCanvas()
     const canvas = setupCanvas(viewport)
 
+    const outputScale = window.devicePixelRatio || 1
+    const transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : undefined
+
     // Render PDF page into canvas context
     const renderContext: RenderParameters = {
       canvasContext: canvas.getContext('2d')!,
       viewport,
       annotationMode: props.hideForms ? PDFJS.AnnotationMode.ENABLE : PDFJS.AnnotationMode.ENABLE_FORMS,
+      transform,
     }
 
     if (canvas?.getAttribute('role') !== 'main') {
@@ -195,7 +205,7 @@ watch(() => props.pdf, (pdf) => {
     initDoc(pdf)
 })
 
-watch(() => [props.scale, props.rotation, props.page, props.hideForms], () => {
+watch(() => [props.scale, props.rotation, props.page, props.hideForms, props.watermarkText], () => {
   renderPage(props.page)
 })
 
@@ -227,19 +237,20 @@ defineExpose({
 <template>
   <div ref="container" style="position: relative; display: block; overflow: hidden;">
     <canvas dir="ltr" style="display: block" role="main" />
-    <TextLayer v-show="textLayer" :page="PageProxy as PDFPageProxy" :viewport="InternalViewport" />
     <AnnotationLayer
       v-show="annotationLayer"
       :filter="annotationsFilter!"
       :map="annotationsMap"
-      :viewport="InternalViewport"
+      :viewport="InternalViewport!"
       :image-resources-path="imageResourcesPath"
       :hide-forms="hideForms"
-      :page="PageProxy as PDFPageProxy"
-      :document="DocumentProxy as PDFDocumentProxy"
+      :page="PageProxy!"
+      :document="DocumentProxy!"
       @annotation="emitAnnotation($event)"
     />
-    <div v-show="loading" ref="loadingLayer" style="display: block; position: absolute">
+    <TextLayer v-show="textLayer" :page="PageProxy!" :viewport="InternalViewport!" />
+    <XFALayer :page="PageProxy!" :viewport="InternalViewport!" :document="DocumentProxy!" />
+    <div v-show="loading" ref="loadingLayer" style="position: absolute;">
       <slot />
     </div>
   </div>

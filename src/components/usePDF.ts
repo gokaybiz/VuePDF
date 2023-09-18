@@ -1,9 +1,8 @@
 import * as PDFJS from 'pdfjs-dist'
-import PDFWorker from 'pdfjs-dist/build/pdf.worker?url'
+import PDFWorker from 'pdfjs-dist/build/pdf.worker.min?url'
 import { shallowRef } from 'vue'
 
-import type { PDFDocumentLoadingTask } from 'pdfjs-dist'
-import type { DocumentInitParameters, PDFDataRangeTransport, TypedArray } from 'pdfjs-dist/types/src/display/api'
+import type { DocumentInitParameters, PDFDataRangeTransport, PDFDocumentLoadingTask, TypedArray } from 'pdfjs-dist/types/src/display/api'
 import type { OnPasswordCallback, UsePDFInfo, UsePDFOptions } from './types'
 
 // Could not find a way to make this work with vite, importing the worker entry bundle the whole worker to the the final output
@@ -45,7 +44,7 @@ export function usePDF(src: string | URL | TypedArray | PDFDataRangeTransport | 
   const pages = shallowRef(0)
   const info = shallowRef<UsePDFInfo | {}>({})
 
-  const loadingTask = PDFJS.getDocument(src)
+  const loadingTask: PDFDocumentLoadingTask = PDFJS.getDocument(src)
   if (options.onProgress)
     loadingTask.onProgress = options.onProgress
 
@@ -65,12 +64,14 @@ export function usePDF(src: string | URL | TypedArray | PDFDataRangeTransport | 
 
     const metadata = await doc.getMetadata()
     const attachments = (await doc.getAttachments()) as Record<string, unknown>
-    const javascript = await doc.getJavaScript()
+    const javascript = shallowRef(await doc.getJSActions())
+    if (javascript.value) // for backward support
+      javascript.value = Object.values(javascript.value).flatMap(value => value as string[])
 
     info.value = {
       metadata,
       attachments,
-      javascript,
+      javascript: javascript.value,
     }
   }, (error) => {
     // PDF loading error

@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable no-case-declarations */
-import type { PDFDocumentProxy } from 'pdfjs-dist'
-import type { RefProxy } from 'pdfjs-dist/types/src/display/api'
+import type { PDFDocumentProxy, RefProxy } from 'pdfjs-dist/types/src/display/api'
 import type { AnnotationEventPayload } from '../types'
 
 interface PopupArgs {
@@ -209,6 +208,5 @@ function annotationEventsHandler(evt: Event, PDFDoc: PDFDocumentProxy, Annotatio
 
 export {
   EVENTS_TO_HANDLER,
-  annotationEventsHandler
+  annotationEventsHandler,
 }
-

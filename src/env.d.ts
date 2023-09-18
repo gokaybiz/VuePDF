@@ -15,6 +15,11 @@ declare module "*?worker&url" {
   export default workerUrl;
 }
 
-declare module "pdfjs-dist/build/pdf" {
-  export * from 'pdfjs-dist'
+// declare module "pdfjs-dist/build/pdf" {
+//   export * from 'pdfjs-dist'
+// }
+declare module 'pdfjs-dist' {
+  var pdfjsLib: any;
+  export = pdfjsLib;
 }
+
