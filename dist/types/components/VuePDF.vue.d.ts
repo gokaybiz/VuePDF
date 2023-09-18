@@ -1,106 +1,107 @@
 import 'pdfjs-dist/web/pdf_viewer.css';
+import type { PDFDocumentLoadingTask } from 'pdfjs-dist/types/src/display/api';
+import type { PageViewport } from 'pdfjs-dist/types/src/display/display_utils';
 import type { AnnotationEventPayload } from './types';
 declare function reload(): void;
 declare function cancel(): void;
-declare function getAnnotationStorage(): {
-    onSetModified: any;
-    onResetModified: any;
-    onAnnotationEditor: any;
-    getValue: (key: string, defaultValue: Object) => Object;
-    getRawValue: (key: string) => Object;
-    remove: (key: string) => void;
-    setValue: (key: string, value: Object) => void;
-    has: (key: string) => boolean;
-    getAll: () => Object | null;
-    setAll: (obj: Object) => void;
-    readonly size: number;
-    resetModified: () => void;
-    readonly print: {
-        readonly serializable: null;
-        onSetModified: any;
-        onResetModified: any;
-        onAnnotationEditor: any;
-        getValue: (key: string, defaultValue: Object) => Object;
-        getRawValue: (key: string) => Object;
-        remove: (key: string) => void;
-        setValue: (key: string, value: Object) => void;
-        has: (key: string) => boolean;
-        getAll: () => Object | null;
-        setAll: (obj: Object) => void;
-        readonly size: number;
-        resetModified: () => void;
-        readonly print: any;
+declare function getAnnotationStorage(): import("pdfjs-dist/types/src/display/annotation_storage").AnnotationStorage | undefined;
+declare const _default: __VLS_WithTemplateSlots<import("vue").DefineComponent<{
+    page: {
+        type: import("vue").PropType<number>;
+        default: number;
     };
-    readonly serializable: Map<any, any> | null;
-} | undefined;
-declare const _default: __VLS_WithTemplateSlots<import("vue").DefineComponent<__VLS_WithDefaults<__VLS_TypePropsToRuntimeProps<{
-    pdf?: import("pdfjs-dist/types/src/display/api").PDFDocumentLoadingTask | undefined;
-    page?: number | undefined;
-    scale?: number | undefined;
-    rotation?: number | undefined;
-    fitParent?: boolean | undefined;
-    textLayer?: boolean | undefined;
-    imageResourcesPath?: string | undefined;
-    hideForms?: boolean | undefined;
-    annotationLayer?: boolean | undefined;
-    annotationsFilter?: string[] | undefined;
-    annotationsMap?: object | undefined;
-    watermarkText?: string | undefined;
-}>, {
-    page: number;
-    scale: number;
-}>, {
+    imageResourcesPath: {
+        type: import("vue").PropType<string>;
+    };
+    hideForms: {
+        type: import("vue").PropType<boolean>;
+    };
+    annotationLayer: {
+        type: import("vue").PropType<boolean>;
+    };
+    textLayer: {
+        type: import("vue").PropType<boolean>;
+    };
+    pdf: {
+        type: import("vue").PropType<PDFDocumentLoadingTask>;
+    };
+    scale: {
+        type: import("vue").PropType<number>;
+        default: number;
+    };
+    rotation: {
+        type: import("vue").PropType<number>;
+    };
+    fitParent: {
+        type: import("vue").PropType<boolean>;
+    };
+    annotationsFilter: {
+        type: import("vue").PropType<string[]>;
+    };
+    annotationsMap: {
+        type: import("vue").PropType<object>;
+    };
+    watermarkText: {
+        type: import("vue").PropType<string>;
+    };
+}, {
     reload: typeof reload;
     cancel: typeof cancel;
     getAnnotationStorage: typeof getAnnotationStorage;
 }, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {
     annotation: (payload: AnnotationEventPayload) => void;
-    loaded: (payload: import("pdfjs-dist/types/src/display/display_utils").PageViewport) => void;
-}, string, import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<__VLS_WithDefaults<__VLS_TypePropsToRuntimeProps<{
-    pdf?: import("pdfjs-dist/types/src/display/api").PDFDocumentLoadingTask | undefined;
-    page?: number | undefined;
-    scale?: number | undefined;
-    rotation?: number | undefined;
-    fitParent?: boolean | undefined;
-    textLayer?: boolean | undefined;
-    imageResourcesPath?: string | undefined;
-    hideForms?: boolean | undefined;
-    annotationLayer?: boolean | undefined;
-    annotationsFilter?: string[] | undefined;
-    annotationsMap?: object | undefined;
-    watermarkText?: string | undefined;
-}>, {
-    page: number;
-    scale: number;
-}>>> & {
+    loaded: (payload: PageViewport) => void;
+}, string, import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
+    page: {
+        type: import("vue").PropType<number>;
+        default: number;
+    };
+    imageResourcesPath: {
+        type: import("vue").PropType<string>;
+    };
+    hideForms: {
+        type: import("vue").PropType<boolean>;
+    };
+    annotationLayer: {
+        type: import("vue").PropType<boolean>;
+    };
+    textLayer: {
+        type: import("vue").PropType<boolean>;
+    };
+    pdf: {
+        type: import("vue").PropType<PDFDocumentLoadingTask>;
+    };
+    scale: {
+        type: import("vue").PropType<number>;
+        default: number;
+    };
+    rotation: {
+        type: import("vue").PropType<number>;
+    };
+    fitParent: {
+        type: import("vue").PropType<boolean>;
+    };
+    annotationsFilter: {
+        type: import("vue").PropType<string[]>;
+    };
+    annotationsMap: {
+        type: import("vue").PropType<object>;
+    };
+    watermarkText: {
+        type: import("vue").PropType<string>;
+    };
+}>> & {
     onAnnotation?: ((payload: AnnotationEventPayload) => any) | undefined;
-    onLoaded?: ((payload: import("pdfjs-dist/types/src/display/display_utils").PageViewport) => any) | undefined;
+    onLoaded?: ((payload: PageViewport) => any) | undefined;
 }, {
-    scale: number;
     page: number;
-}>, {
+    scale: number;
+}, {}>, {
     default?(_: {}): any;
 }>;
 export default _default;
-type __VLS_NonUndefinedable<T> = T extends undefined ? never : T;
-type __VLS_TypePropsToRuntimeProps<T> = {
-    [K in keyof T]-?: {} extends Pick<T, K> ? {
-        type: import('vue').PropType<__VLS_NonUndefinedable<T[K]>>;
-    } : {
-        type: import('vue').PropType<T[K]>;
-        required: true;
-    };
-};
-type __VLS_WithDefaults<P, D> = {
-    [K in keyof Pick<P, keyof P>]: K extends keyof D ? __VLS_Prettify<P[K] & {
-        default: D[K];
-    }> : P[K];
-};
 type __VLS_WithTemplateSlots<T, S> = T & {
     new (): {
         $slots: S;
     };
 };
-type __VLS_Prettify<T> = {
-    [K in keyof T]: T[K];
-} & {};

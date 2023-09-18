@@ -1,4 +1,4 @@
-import type { DocumentInitParameters, PDFDataRangeTransport, TypedArray } from 'pdfjs-dist/types/src/display/api';
+import type { DocumentInitParameters, PDFDataRangeTransport, PDFDocumentLoadingTask, TypedArray } from 'pdfjs-dist/types/src/display/api';
 import type { UsePDFInfo, UsePDFOptions } from './types';
 /**
  * @typedef {Object} UsePDFParameters
@@ -19,7 +19,7 @@ import type { UsePDFInfo, UsePDFOptions } from './types';
  * UsePDF object parameters
  */
 export declare function usePDF(src: string | URL | TypedArray | PDFDataRangeTransport | DocumentInitParameters, options?: UsePDFOptions): {
-    pdf: import("vue").ShallowRef<import("pdfjs-dist/types/src/display/api").PDFDocumentLoadingTask | undefined>;
+    pdf: import("vue").ShallowRef<PDFDocumentLoadingTask | undefined>;
     pages: import("vue").ShallowRef<number>;
     info: import("vue").ShallowRef<{}> | import("vue").ShallowRef<UsePDFInfo>;
 };
