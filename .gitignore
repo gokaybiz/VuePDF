@@ -5,12 +5,14 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+pnpm-lock*
 lerna-debug.log*
 
 node_modules
 .ghpages
 .cache
 .temp
+.history
 .vscode
 playground/pdf/*
 !playground/pdf/example_*.pdf

@@ -3,9 +3,11 @@ import * as PDFJS from 'pdfjs-dist'
 import { onMounted, ref, toRaw, watch } from 'vue'
 
 import type { PDFDocumentProxy, PDFPageProxy, PageViewport } from 'pdfjs-dist'
-import type { AnnotationLayerParameters } from 'pdfjs-dist/types/src/display/annotation_layer'
 
-import { EVENTS_TO_HANDLER, annotationEventsHandler } from '../utils/annotations'
+import {
+  EVENTS_TO_HANDLER,
+  annotationEventsHandler,
+} from '../utils/annotations'
 import { SimpleLinkService } from '../utils/link_service'
 
 import type { AnnotationEventPayload } from '../types'
@@ -29,7 +31,11 @@ const layer = ref<HTMLDivElement>()
 const annotations = ref<any[]>()
 
 function annotationsEvents(evt: Event) {
-  const value = annotationEventsHandler(evt, props.document!, annotations.value!)
+  const value = annotationEventsHandler(
+    evt,
+    props.document!,
+    annotations.value!,
+  )
   Promise.resolve(value).then((data) => {
     if (data)
       emit('annotation', data)
@@ -52,10 +58,15 @@ async function getAnnotations() {
   let annotations = await page?.getAnnotations()
   if (props.filter) {
     const filters = props.filter
-    annotations = annotations!.filter((value) => {
+    annotations = annotations!.filter((value: any) => {
       const subType = value.subtype
-      const fieldType = value.fieldType ? `${subType}.${value.fieldType}` : null
-      return filters?.includes(subType) || (fieldType !== null && filters?.includes(fieldType))
+      const fieldType = value.fieldType
+        ? `${subType}.${value.fieldType}`
+        : null
+      return (
+        filters?.includes(subType)
+        || (fieldType !== null && filters?.includes(fieldType))
+      )
     })
   }
 
@@ -76,12 +87,22 @@ async function render() {
   // Canvas map for push button widget
   const canvasMap = new Map<string, HTMLCanvasElement>([])
   for (const anno of annotations.value!) {
-    if (anno.subtype === 'Widget' && anno.fieldType === 'Btn' && anno.pushButton) {
+    if (
+      anno.subtype === 'Widget'
+      && anno.fieldType === 'Btn'
+      && anno.pushButton
+    ) {
       const canvasWidth = anno.rect[2] - anno.rect[0]
       const canvasHeight = anno.rect[3] - anno.rect[1]
       const subCanvas = document.createElement('canvas')
-      subCanvas.setAttribute('width', (canvasWidth * viewport!.scale).toString())
-      subCanvas.setAttribute('height', (canvasHeight * viewport!.scale).toString())
+      subCanvas.setAttribute(
+        'width',
+        (canvasWidth * viewport!.scale).toString(),
+      )
+      subCanvas.setAttribute(
+        'height',
+        (canvasHeight * viewport!.scale).toString(),
+      )
       canvasMap.set(anno.id, subCanvas)
     }
   }
@@ -90,31 +111,42 @@ async function render() {
     for (const [key, value] of Object.entries(props.map))
       annotationStorage.setValue(key, value)
   }
-  const parameters: AnnotationLayerParameters = {
-    annotations: annotations.value!,
-    viewport: viewport!.clone({ dontFlip: true }),
-    linkService: new SimpleLinkService(),
-    annotationCanvasMap: canvasMap,
+
+  const annotationLayer = new PDFJS.AnnotationLayer({
     div: layer.value!,
+    annotationCanvasMap: canvasMap,
+    page: page!,
+    viewport: viewport!.clone({ dontFlip: true }),
+    accessibilityManager: null,
+    l10n: null,
+  })
+
+  await annotationLayer.render({
+    annotations: annotations.value!,
+    linkService: new SimpleLinkService(),
     annotationStorage,
     renderForms: !props.hideForms,
-    page: page!,
     enableScripting: false,
     hasJSActions: await getHasJSActions(),
     fieldObjects: await getFieldObjects(),
     downloadManager: null,
     imageResourcesPath: props.imageResourcesPath,
-  }
-  PDFJS.AnnotationLayer.render(parameters)
+    viewport: viewport!.clone({ dontFlip: true }),
+    div: layer.value!,
+    page: page!,
+  })
 
   for (const evtHandler of EVENTS_TO_HANDLER)
     layer.value!.addEventListener(evtHandler, annotationsEvents)
 }
 
-watch(() => props.viewport, () => {
-  if (props.page && props.viewport && layer.value)
-    render()
-})
+watch(
+  () => props.viewport,
+  () => {
+    if (props.page && props.viewport && layer.value)
+      render()
+  },
+)
 
 onMounted(() => {
   if (props.page && props.viewport && layer.value)
@@ -123,7 +155,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div ref="layer" class="annotationLayer" style="display: block;" />
+  <div ref="layer" class="annotationLayer" style="display: block" />
 </template>
 
 <style>

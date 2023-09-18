@@ -65,12 +65,14 @@ export function usePDF(src: string | URL | TypedArray | PDFDataRangeTransport | 
 
     const metadata = await doc.getMetadata()
     const attachments = (await doc.getAttachments()) as Record<string, unknown>
-    const javascript = await doc.getJavaScript()
+    const javascript = shallowRef(await doc.getJSActions())
+    if (javascript.value) // for backward support
+      javascript.value = Object.values(javascript.value).flatMap(value => value as string[])
 
     info.value = {
       metadata,
       attachments,
-      javascript,
+      javascript: javascript.value,
     }
   }, (error) => {
     // PDF loading error

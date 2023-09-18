@@ -12,6 +12,6 @@ import XFALayer from './samples/XFALayer.vue';
 
 <template>
   <div>
-    <XFALayer />
+    <AnnoLayer />
   </div>
 </template>
