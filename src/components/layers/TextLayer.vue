@@ -2,7 +2,8 @@
 import * as PDFJS from 'pdfjs-dist'
 import { onMounted, ref, watch } from 'vue'
 
-import type { PDFPageProxy, PageViewport } from 'pdfjs-dist'
+import type { PDFPageProxy } from 'pdfjs-dist/types/src/display/api'
+import type { PageViewport } from 'pdfjs-dist/types/src/display/display_utils'
 import type { TextLayerRenderParameters } from 'pdfjs-dist/types/src/display/text_layer'
 
 const props = defineProps<{
